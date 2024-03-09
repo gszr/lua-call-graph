@@ -5,6 +5,7 @@ function graph.capture(name)
   debug.sethook(function()
     local callee_name = debug.getinfo(2).name or ""
     local caller_name = (debug.getinfo(3) or {} ).name or "main"
+
     local capture = captures[name] or {}
     captures[name] = capture
 
@@ -39,24 +40,23 @@ local function t2s(t)
 end
 
 function graph.emit(name, filename)
-        debug.sethook()
-        local graph = captures[name]
+  debug.sethook()
+  local graph = captures[name]
 
-        local f = assert(io.open(filename, "w+"))
-        f:write(string.format("digraph calls {\n"))
+  local f = assert(io.open(filename, "w+"))
+  f:write(string.format("digraph calls {\n"))
 
-        print(require"inspect"(graph))
-        local done = {}
-        for i, caller in ipairs(graph) do
-            if not done[caller] then
-                local callees = t2s(graph[caller])
-                f:write(string.format("\t{%s} -> %s;\n", caller, callees))
-                done[caller] = true
-            end
-        end
+  local done = {}
+  for i, caller in ipairs(graph) do
+    if not done[caller] then
+      local callees = t2s(graph[caller])
+      f:write(string.format("\t{%s} -> %s;\n", caller, callees))
+      done[caller] = true
+    end
+  end
 
-        f:write(string.format("\n}"))
-        f:close()
+  f:write(string.format("\n}"))
+  f:close()
 end
 
 
