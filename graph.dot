@@ -1,0 +1,9 @@
+digraph calls {
+	{main} -> { a, emit };
+	{a} -> { b };
+	{b} -> { c, print };
+	{c} -> { d };
+	{d} -> { print };
+	{emit} -> { sethook };
+
+}
