@@ -1,5 +1,3 @@
-require"luarocks.loader"
-
 local graph = {}
 local captures = {}
 
