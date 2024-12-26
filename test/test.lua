@@ -1,4 +1,4 @@
-local graph = require"graph"
+local callgraph = require"callgraph"
 
 function a()
   b()
@@ -17,7 +17,7 @@ function d()
   print("")
 end
 
-local g = graph.new({
+local g = callgraph.new({
   name = "callgraph",
   filename = "graph.dot",
 })
