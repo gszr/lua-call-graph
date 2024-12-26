@@ -4,15 +4,33 @@ Generate a call graph of Lua programs.
 
 ## API
 
-### capture
+### new
 
-**syntax**: *graph.capture(name)*
+Create new capture instance.
+
+**syntax**: graph.new(cfg)
+
+Supported configs:
+
+`name`: call graph name
+`filename`: name for the call graph `.dot` file (defaults to `name`)
+
+### :capture
+
+**syntax**: *graph:capture()*
 
 Starts capturing the call graph from that point in the program.
 
-### emit
+### :stop
 
-**syntax**: *graph.emit(name, filename)*
+**syntax**: graph:stop()
+
+Stops capturing the call graph. A subsequent call to `:emit` generates the
+call graph.
+
+### :emit
+
+**syntax**: *graph:emit()*
 
 Emits the captured call graph named `name` into the DOT file `filename`.
 
@@ -39,11 +57,18 @@ function d()
   print("")
 end
 
-graph.capture("g")
+local g = graph.new({
+  name = "callgraph",
+  filename = "graph.dot",
+})
+
+g:capture()
 a()
-graph.emit("g", "graph.dot")
+g:stop()
+c()
+g:emit()
 ```
 
 the library outputs the following call graph:
 
-![call graph](./graph.svg)
+![call graph](./test/graph.svg)

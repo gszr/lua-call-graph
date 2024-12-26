@@ -17,6 +17,13 @@ function d()
   print("")
 end
 
-graph.capture("g")
+local g = graph.new({
+  name = "callgraph",
+  filename = "graph.dot",
+})
+
+g:capture()
 a()
-graph.emit("g", "graph.dot")
+g:stop()
+c()
+g:emit()
