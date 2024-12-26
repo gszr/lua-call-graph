@@ -11,9 +11,8 @@ Create new capture instance.
 **syntax**: graph.new(cfg)
 
 Supported configs:
-
-`name`: call graph name
-`filename`: name for the call graph `.dot` file (defaults to `name`)
+* `name`: call graph name
+* `filename`: name for the call graph `.dot` file (defaults to `name`)
 
 ### :capture
 
