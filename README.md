@@ -13,6 +13,11 @@ Create new capture instance.
 Supported configs:
 * `name`: call graph name
 * `filename`: name for the call graph `.dot` file (defaults to `name`)
+* `ignores`: an array of function names to redact from the `.dot` file
+* `separator`: the character to use as separator for spaces[^1]
+
+[^1]: Some internal function names might contain spaces. For example, `for iterator`.
+The `separator` value will be used to replace these spaces.
 
 ### :capture
 
@@ -37,35 +42,7 @@ Emits the captured call graph named `name` into the DOT file `filename`.
 
 Given the Lua code below
 ```lua
-local graph = require"graph"
-
-function a()
-  b()
-end
-
-function b()
-  c()
-  print()
-end
-
-function c()
-  d()
-end
-
-function d()
-  print("")
-end
-
-local g = graph.new({
-  name = "callgraph",
-  filename = "graph.dot",
-})
-
-g:capture()
-a()
-g:stop()
-c()
-g:emit()
+# test/test.lua
 ```
 
 the library outputs the following call graph:

@@ -2,9 +2,11 @@ local graph = {}
 graph.__index = graph
 
 
-local ignores = {
-  ["stop"] = true,
+local DEFAULT_IGNORES = {
+  "stop"
 }
+local UNNAMED_FUNC_NAME = "_unnamed"
+
 
 local function t2s(t)
   local s = ""
@@ -27,18 +29,30 @@ end
 
 function graph:capture()
   debug.sethook(function()
-    local callee_name = debug.getinfo(2).name or ""
-    local caller_name = (debug.getinfo(3) or {} ).name or "main"
+    local callee_debug = debug.getinfo(2)
+    local caller_debug = debug.getinfo(3) or {}
+    local callee_name = callee_debug.name or ""
+    local caller_name = caller_debug.name or "main"
 
-    if ignores[callee_name] or ignores[caller_name] then
+    if self.cfg.ignores[callee_name] or self.cfg.ignores[caller_name] then
       return
     end
 
     local capture = self.captures[self.cfg.name] or {}
     self.captures[self.cfg.name] = capture
 
-    caller_name = caller_name:gsub("_", ""):gsub("-", ""):gsub("%(", ""):gsub("%)", "")
-    callee_name = callee_name:gsub("_", ""):gsub("-", ""):gsub("%(", ""):gsub("%)", "")
+    if callee_name == "" then
+      for env_key, env_val in pairs(_G) do
+        if env_val == callee_debug.func then
+          callee_name = env_key
+          break
+        end
+      end
+      callee_name = callee_name == "" and UNNAMED_FUNC_NAME or callee_name
+    end
+
+    caller_name = caller_name:gsub("-", ""):gsub("%(", ""):gsub("%)", ""):gsub(" ", self.cfg.separator)
+    callee_name = callee_name:gsub("-", ""):gsub("%(", ""):gsub("%)", ""):gsub(" ", self.cfg.separator)
 
     local entry_name = caller_name
     capture[entry_name] = capture[entry_name] or {}
@@ -76,11 +90,22 @@ end
 
 
 function graph.new(cfg)
-  -- cfg.name
-  -- cfg.filename
-
   assert(cfg.name, "name: capture name is required")
+  assert(cfg.ignores and type(cfg.ignores) == "table" and #cfg.ignores ~= 0,
+    "ignores: must be an array")
+
   cfg.filename = cfg.filename or cfg.name
+  cfg.ignores = cfg.ignores or {}
+
+  local ignores = {table.unpack(DEFAULT_IGNORES)}
+  for _, v in ipairs(cfg.ignores or {}) do
+    ignores[#ignores+1] = v
+  end
+  for _, v in ipairs(ignores) do
+    ignores[v] = true
+  end
+
+  cfg.separator = cfg.separator or "_"
 
   return setmetatable({
     cfg = cfg,
