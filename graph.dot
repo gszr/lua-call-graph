@@ -1,8 +1,0 @@
-digraph callgraph {
-	{main} -> { pcall, b, pcall, stop };
-	{pcall} -> { a, _unnamed };
-	{b} -> { c, print };
-	{c} -> { pairs, for_iterator, for_iterator, for_iterator, d };
-	{d} -> { print };
-	{stop} -> { sethook };
-}
