@@ -21,8 +21,9 @@ end
 
 local g = callgraph.new({
   name = "callgraph",
-  filename = "graph.dot",
+  filename = "test/graph.dot",
   ignores = {"something"},
+  mappings = {b = "b_is_renamed"},
 })
 
 g:capture()

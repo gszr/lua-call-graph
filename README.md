@@ -15,6 +15,8 @@ Supported configs:
 * `filename`: name for the call graph `.dot` file (defaults to `name`)
 * `ignores`: an array of function names to redact from the `.dot` file
 * `separator`: the character to use as separator for spaces[^1]
+* `mappings`: a translation map of function names; if a function mamed `key` is
+  found, it's renamed with `value`
 
 [^1]: Some internal function names might contain spaces. For example, `for iterator`.
 The `separator` value will be used to replace these spaces.
