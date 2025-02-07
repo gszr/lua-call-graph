@@ -90,9 +90,13 @@ end
 
 
 function graph.new(cfg)
+  -- cfg.name
+  -- cfg.filename [opt]
+  -- cfg.ignores [opt]
+  -- cfg.separator [opt]
+  -- cfg.mappings [opt]
+
   assert(cfg.name, "name: capture name is required")
-  assert(cfg.ignores and type(cfg.ignores) == "table" and #cfg.ignores ~= 0,
-    "ignores: must be an array")
 
   cfg.filename = cfg.filename or cfg.name
   cfg.ignores = cfg.ignores or {}
