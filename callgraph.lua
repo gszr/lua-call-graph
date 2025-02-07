@@ -6,6 +6,8 @@ local DEFAULT_IGNORES = {
   "stop"
 }
 local UNNAMED_FUNC_NAME = "_unnamed"
+local TR_PAT = "[-%(%)]+"
+local SP_PAT = "[ ]+"
 
 
 local function t2s(t)
@@ -51,8 +53,13 @@ function graph:capture()
       callee_name = callee_name == "" and UNNAMED_FUNC_NAME or callee_name
     end
 
-    caller_name = caller_name:gsub("-", ""):gsub("%(", ""):gsub("%)", ""):gsub(" ", self.cfg.separator)
-    callee_name = callee_name:gsub("-", ""):gsub("%(", ""):gsub("%)", ""):gsub(" ", self.cfg.separator)
+    caller_name = caller_name:gsub(TR_PAT, ""):gsub(SP_PAT, self.cfg.separator)
+    callee_name = callee_name:gsub(TR_PAT, ""):gsub(SP_PAT, self.cfg.separator)
+
+    if self.cfg.mappings then
+      caller_name = self.cfg.mappings[caller_name] or caller_name
+      callee_name = self.cfg.mappings[callee_name] or callee_name
+    end
 
     local entry_name = caller_name
     capture[entry_name] = capture[entry_name] or {}
@@ -70,12 +77,12 @@ end
 
 
 function graph:emit()
-  local g = self.captures[self.cfg.name]
-
   local f = assert(io.open(self.cfg.filename, "w+"))
   f:write(string.format("digraph %s {\n", self.cfg.name))
 
+  local g = self.captures[self.cfg.name]
   local done = {}
+
   for _, caller in ipairs(g) do
     if not done[caller] then
       local callees = t2s(g[caller])
@@ -102,7 +109,7 @@ function graph.new(cfg)
   cfg.ignores = cfg.ignores or {}
 
   local ignores = {table.unpack(DEFAULT_IGNORES)}
-  for _, v in ipairs(cfg.ignores or {}) do
+  for _, v in ipairs(cfg.ignores) do
     ignores[#ignores+1] = v
   end
   for _, v in ipairs(ignores) do
