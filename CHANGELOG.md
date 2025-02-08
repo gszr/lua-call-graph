@@ -1,4 +1,12 @@
 # Changelog
+## [0.3.0] - 2024-02-08
+
+### Added
+- Added configuration `mappings`; a hash map where `keys` are function names
+to be translated to `values`
+
+### Fixed
+- Fixed issue where `ignores` would be required
 
 ## [0.2.0] - 2024-02-06
 
